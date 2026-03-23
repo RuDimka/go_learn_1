@@ -5,14 +5,11 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 type Config struct {
-	Db     DbConfig
-	Port   string
-	DBConn *gorm.DB
+	Db   DbConfig
+	Port string
 }
 
 type DbConfig struct {
@@ -28,14 +25,6 @@ func NewConfig() *Config {
 		Db:   DbConfig{DSN: GetEnv("DSN", "postgres://taskuser:taskpass@localhost:5432/tasksdb?sslmode=disable")},
 		Port: GetEnv("PORT", ":8080"),
 	}
-
-	db, err := gorm.Open(postgres.Open(cfg.Db.DSN), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Не удалось подключиться к базе данных:", err)
-	}
-
-	cfg.DBConn = db
-	log.Println("Успешно подключились к базе данных")
 
 	return cfg
 }

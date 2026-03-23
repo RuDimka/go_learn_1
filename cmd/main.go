@@ -5,24 +5,25 @@ import (
 	"log"
 	"net/http"
 	"test/app/internal/configs"
+	"test/app/internal/database"
 	"test/app/internal/handlers"
-	"test/app/internal/models"
+	"test/app/internal/service"
 )
 
 func main() {
-	person := models.User{
-		Name:       "Anna",
-		Age:        20,
-		Profession: "IT",
-		IsAlive:    true,
-	}
-
-	fmt.Println(person)
 
 	config := configs.NewConfig()
 	fmt.Println(config)
 
-	mux := handlers.NewRouter(config.DBConn)
+	db, err := database.Connect(*config)
+	if err != nil {
+		log.Fatal("Ошибка подключения к БД", err)
+	}
+	if err := database.Migrate(db); err != nil {
+		log.Fatal("Ошибка миграции", err)
+	}
+	//переменная с бизнес логикой, в ньюроутер
+	mux := handlers.NewRouter(service.NewUserService(db))
 
 	log.Println("Сервер стартанул на порту: ", config.Port)
 	log.Fatal(http.ListenAndServe(config.Port, mux))

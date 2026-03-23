@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"net/http"
-
-	"gorm.io/gorm"
+	"test/app/internal/service"
 )
 
 type Handler struct {
-	db *gorm.DB
+	UserService *service.UserService
 }
 
-func NewRouter(db *gorm.DB) *http.ServeMux {
-	h := &Handler{db: db}
+func NewRouter(userService *service.UserService) *http.ServeMux {
+	h := &Handler{UserService: userService}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/user", h.HelloHandler)
 	mux.HandleFunc("/health", h.HealthHandler)
 	mux.HandleFunc("/time", h.TimeHandler)
 	mux.HandleFunc("/users", h.GetUsers)
+	mux.HandleFunc("/users/create", h.CreateUser)
 	return mux
 }

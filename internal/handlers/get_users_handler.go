@@ -11,13 +11,19 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Не верный метод", http.StatusMethodNotAllowed)
 		return
 	}
+
 	var users []models.User
 
-	if err := h.db.Order("created_at desc").Find(&users).Error; err != nil {
-		http.Error(w, "Ошибка при получении всех пользователей : "+err.Error(), http.StatusInternalServerError)
+	err := h.UserService.GetUsers(&users)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Список пользователей успешно получен",
+		"users":   users,
+	})
 }
