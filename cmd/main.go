@@ -22,7 +22,7 @@ func main() {
 	if err := database.Migrate(db); err != nil {
 		log.Fatal("Ошибка миграции", err)
 	}
-	//переменная с бизнес логикой, в ньюроутер
+
 	mux := handlers.NewRouter(service.NewUserService(db))
 
 	log.Println("Сервер стартанул на порту: ", config.Port)
